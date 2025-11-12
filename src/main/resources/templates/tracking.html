@@ -1,65 +1,135 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>QTEN Logistics Portal - Shipments</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QTEN Logistics Portal - Shipment Tracking</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <style>
+        body {
+            background-color: #f4f7fb;
+            font-family: "Segoe UI", Roboto, Arial, sans-serif;
+        }
+
+        .navbar {
+            background: linear-gradient(90deg, #004aad, #0078ff);
+        }
+
+        .navbar-brand {
+            color: #fff !important;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .card {
+            border-radius: 12px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1);
+            border: none;
+        }
+
+        .table thead {
+            background-color: #004aad;
+            color: #fff;
+            font-size: 14px;
+            position: sticky;
+            top: 0;
+            z-index: 2;
+        }
+
+        .table-container {
+            max-height: 75vh;
+            overflow-y: auto;
+        }
+
+        .table tbody tr:hover {
+            background-color: #e9f2ff;
+        }
+
+        footer {
+            margin-top: 40px;
+            text-align: center;
+            color: #6c757d;
+            font-size: 14px;
+        }
+    </style>
 </head>
-<body class="bg-light p-4">
 
-<div class="container">
-    <h3 class="text-primary mb-4">Shipment Tracking Dashboard</h3>
-
-    <!-- Search -->
-    <form method="get" action="/shipments/view" class="row g-2 mb-3">
-        <div class="col-md-4">
-            <input type="text" name="search" class="form-control" placeholder="Search by HBL / Container / Shipper">
+<body>
+<nav class="navbar navbar-expand-lg">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">QTEN Logistics Portal</a>
+        <div>
+            <a href="/logout" class="btn btn-outline-light btn-sm">Logout</a>
         </div>
-        <div class="col-md-2">
-            <button type="submit" class="btn btn-primary w-100">Search</button>
-        </div>
-    </form>
+    </div>
+</nav>
 
-    <!-- Data Table -->
-    <div class="table-responsive">
-        <table class="table table-bordered table-striped table-hover">
-            <thead class="table-primary">
-            <tr>
-                <th>Sl.No</th>
-                <th>HBL Number</th>
-                <th>Shipper</th>
-                <th>Consignee</th>
-                <th>Container</th>
-                <th>Size</th>
-                <th>Shipping Line</th>
-                <th>Stuffing Date</th>
-                <th>ETD Origin</th>
-                <th>ETD Transshipment</th>
-                <th>ETA Destination</th>
-                <th>Destination Port</th>
-                <th>Remarks</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="s : ${shipments}">
-                <td th:text="${s.serialNo}"></td>
-                <td th:text="${s.hblNumber}"></td>
-                <td th:text="${s.shipperName}"></td>
-                <td th:text="${s.consigneeName}"></td>
-                <td th:text="${s.containerNumber}"></td>
-                <td th:text="${s.containerSize}"></td>
-                <td th:text="${s.shippingLine}"></td>
-                <td th:text="${s.stuffingDate}"></td>
-                <td th:text="${s.etdOriginPort}"></td>
-                <td th:text="${s.etdTransshipmentPort}"></td>
-                <td th:text="${s.etaDestinationPort}"></td>
-                <td th:text="${s.destinationPort}"></td>
-                <td th:text="${s.remarks}"></td>
-            </tr>
-            </tbody>
-        </table>
+<div class="container mt-4">
+    <div class="card p-4">
+        <h3 class="mb-4 text-primary text-center">Shipment Tracking</h3>
+
+        <div class="table-responsive table-container">
+            <table class="table table-bordered table-striped align-middle">
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Serial No</th>
+                    <th>Consignee</th>
+                    <th>Notify</th>
+                    <th>Stuffing Date</th>
+                    <th>Shipping Line</th>
+                    <th>Container No</th>
+                    <th>Container Size</th>
+                    <th>Shipper</th>
+                    <th>Invoice No</th>
+                    <th>HBL No</th>
+                    <th>Total Cartons</th>
+                    <th>CBM</th>
+                    <th>Gross Weight</th>
+                    <th>ETD Origin</th>
+                    <th>Feeder Vsl/Voy</th>
+                    <th>ETD Transshipment</th>
+                    <th>Mother Vsl/Voy</th>
+                    <th>ETA Destination</th>
+                    <th>Destination Port</th>
+                    <th>Remarks</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <tr th:each="ship, iterStat : ${shipments}">
+                    <td th:text="${iterStat.count}">1</td>
+                    <td th:text="${ship.serialNo}">001</td>
+                    <td th:text="${ship.consigneeName}">Consignee</td>
+                    <td th:text="${ship.notify}">Notify</td>
+                    <td th:text="${ship.stuffingDate}">2025-11-01</td>
+                    <td th:text="${ship.shippingLine}">Shipping Line</td>
+                    <td th:text="${ship.containerNumber}">TCLU1234567</td>
+                    <td th:text="${ship.containerSize}">40FT</td>
+                    <td th:text="${ship.shipperName}">Shipper</td>
+                    <td th:text="${ship.shipperInvoiceNumber}">INV001</td>
+                    <td th:text="${ship.hblNumber}">HBL001</td>
+                    <td th:text="${ship.totalCartons}">120</td>
+                    <td th:text="${ship.cbm}">23.5</td>
+                    <td th:text="${ship.grossWeight}">15000</td>
+                    <td th:text="${ship.etdOriginPort}">Tuticorin</td>
+                    <td th:text="${ship.feederVesselVoyage}">Feeder V1</td>
+                    <td th:text="${ship.etdTransshipmentPort}">Colombo</td>
+                    <td th:text="${ship.motherVesselVoyage}">Mother V2</td>
+                    <td th:text="${ship.etaDestinationPort}">New York</td>
+                    <td th:text="${ship.destinationPort}">NY Port</td>
+                    <td th:text="${ship.remarks}">In Transit</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 
+<footer>
+    © 2025 QTEN Logistics | Powered by Udayakumar G.
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
