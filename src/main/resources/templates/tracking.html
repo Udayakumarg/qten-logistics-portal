@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>QTEN Logistics Portal - Shipments</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light p-4">
+
+<div class="container">
+    <h3 class="text-primary mb-4">Shipment Tracking Dashboard</h3>
+
+    <!-- Search -->
+    <form method="get" action="/shipments/view" class="row g-2 mb-3">
+        <div class="col-md-4">
+            <input type="text" name="search" class="form-control" placeholder="Search by HBL / Container / Shipper">
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100">Search</button>
+        </div>
+    </form>
+
+    <!-- Data Table -->
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped table-hover">
+            <thead class="table-primary">
+            <tr>
+                <th>Sl.No</th>
+                <th>HBL Number</th>
+                <th>Shipper</th>
+                <th>Consignee</th>
+                <th>Container</th>
+                <th>Size</th>
+                <th>Shipping Line</th>
+                <th>Stuffing Date</th>
+                <th>ETD Origin</th>
+                <th>ETD Transshipment</th>
+                <th>ETA Destination</th>
+                <th>Destination Port</th>
+                <th>Remarks</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="s : ${shipments}">
+                <td th:text="${s.serialNo}"></td>
+                <td th:text="${s.hblNumber}"></td>
+                <td th:text="${s.shipperName}"></td>
+                <td th:text="${s.consigneeName}"></td>
+                <td th:text="${s.containerNumber}"></td>
+                <td th:text="${s.containerSize}"></td>
+                <td th:text="${s.shippingLine}"></td>
+                <td th:text="${s.stuffingDate}"></td>
+                <td th:text="${s.etdOriginPort}"></td>
+                <td th:text="${s.etdTransshipmentPort}"></td>
+                <td th:text="${s.etaDestinationPort}"></td>
+                <td th:text="${s.destinationPort}"></td>
+                <td th:text="${s.remarks}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+</body>
+</html>
