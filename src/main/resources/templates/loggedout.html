@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Logged Out - QTEN Logistics Portal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #1B4B66;  /* Deep teal blue */
+            --accent: #00B8A9;   /* Aqua mint */
+            --bg: #F7F9FB;
+            --text-dark: #243447;
+        }
+
+        body {
+            background-color: var(--bg);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Inter', sans-serif;
+            color: var(--text-dark);
+        }
+
+        .logout-card {
+            background: #fff;
+            padding: 50px 60px;
+            border-radius: 16px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            animation: fadeIn 0.8s ease-in;
+        }
+
+        .logout-card h2 {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .logout-card p {
+            color: #6b7b8c;
+            font-size: 15px;
+            margin-bottom: 30px;
+        }
+
+        .btn-login {
+            background-color: var(--accent);
+            color: #fff;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 16px;
+            transition: 0.3s all;
+        }
+
+        .btn-login:hover {
+            background-color: #02a595;
+            transform: translateY(-2px);
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            background-color: var(--accent);
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: 600;
+            font-size: 28px;
+        }
+
+        footer {
+            position: absolute;
+            bottom: 20px;
+            width: 100%;
+            text-align: center;
+            font-size: 13px;
+            color: #7a7a7a;
+        }
+
+        @keyframes fadeIn {
+            from {opacity: 0; transform: translateY(20px);}
+            to {opacity: 1; transform: translateY(0);}
+        }
+    </style>
+
+    <p class="text-muted mb-3">Redirecting you to login in <span id="countdown">5</span> seconds...</p>
+    <script>
+        let seconds = 5;
+        const el = document.getElementById('countdown');
+        const timer = setInterval(() => {
+            seconds--;
+            el.textContent = seconds;
+            if (seconds <= 0) {
+                clearInterval(timer);
+                window.location.href = '/login';
+            }
+        }, 1000);
+    </script>
+
+</head>
+
+<body>
+<div class="logout-card">
+    <div class="logo">Q</div>
+    <h2>Signed Out Successfully</h2>
+    <p>Thank you for using <strong>QTEN Logistics Portal</strong>.<br>See you again soon!</p>
+    <a href="/login" class="btn btn-login">Login Again</a>
+</div>
+
+<footer>
+    © 2025 QTEN Logistics | Designed by Udayakumar G.
+</footer>
+</body>
+</html>
