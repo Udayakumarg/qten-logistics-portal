@@ -5,16 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QTEN Logistics Portal - Shipment Tracking</title>
 
-    <!-- Bootstrap + Font -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
     <style>
         :root {
-            --primary: #1B4B66;  /* Deep teal blue */
-            --accent: #00B8A9;   /* Aqua mint */
-            --bg: #F7F9FB;       /* Subtle blue-gray background */
-            --text-dark: #243447; /* Corporate dark gray */
+            --primary: #1B4B66;
+            --accent: #00B8A9;
+            --bg: #F7F9FB;
+            --text-dark: #243447;
             --text-light: #fff;
         }
 
@@ -24,190 +23,247 @@
             color: var(--text-dark);
         }
 
-        /* NAVBAR */
         .navbar {
             background-color: var(--primary);
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
 
         .navbar-brand {
             color: var(--text-light) !important;
             font-weight: 600;
-            font-size: 20px;
-            letter-spacing: 0.5px;
         }
 
         .btn-logout {
             background: var(--accent);
+            color: white;
             border: none;
-            color: #fff;
-            font-weight: 500;
         }
 
-        .btn-logout:hover {
-            background: #02a595;
-        }
-
-        /* PAGE LAYOUT */
         .card {
-            border: none;
             border-radius: 12px;
             background: #fff;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
         }
 
-        h3.page-title {
+        .page-title {
             color: var(--primary);
-            font-weight: 600;
             border-left: 6px solid var(--accent);
             padding-left: 12px;
-            margin-bottom: 20px;
+            font-weight: 600;
         }
 
-        /* SEARCH BAR */
-        .search-bar .input-group-text {
-            background-color: var(--accent);
-            color: #fff;
-            border: none;
-            font-weight: 500;
-        }
-
-        .form-control:focus {
-            border-color: var(--accent);
-            box-shadow: 0 0 0 0.2rem rgba(0, 184, 169, 0.25);
-        }
-
-        /* TABLE STYLING */
-        .table-container {
-            max-height: 70vh;
-            overflow-y: auto;
-        }
-
-        .table thead {
-            background-color: var(--primary);
+        th a {
             color: var(--text-light);
-            font-weight: 500;
-            position: sticky;
-            top: 0;
-            z-index: 10;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
         }
 
-        .table tbody tr:hover {
-            background-color: rgba(0, 184, 169, 0.1);
+        th a:hover {
+            text-decoration: underline;
         }
 
-        th, td {
-            font-size: 14px;
-            white-space: nowrap;
+        .pagination .page-link {
+            color: var(--primary);
         }
 
-        footer {
-            margin-top: 40px;
+        .pagination .active .page-link {
+            background-color: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .search-loader {
             text-align: center;
-            color: #7a7a7a;
-            font-size: 13px;
-        }
-
-        /* Accent strip under header */
-        .accent-bar {
-            height: 4px;
-            background: var(--accent);
+            color: #777;
+            font-size: 14px;
         }
     </style>
 </head>
-
 <body>
+
 <nav class="navbar navbar-expand-lg px-3">
     <div class="container-fluid">
         <a class="navbar-brand" href="#">QTEN Logistics Portal</a>
-        <div>
-            <a href="/logout" class="btn btn-logout btn-sm">Logout</a>
-        </div>
+        <div><a href="/logout" class="btn btn-logout btn-sm">Logout</a></div>
     </div>
 </nav>
-<div class="accent-bar"></div>
 
 <div class="container mt-4">
     <div class="card p-4">
-        <h3 class="page-title">Shipment Tracking Dashboard</h3>
+        <h3 class="page-title mb-4">Shipment Tracking Dashboard</h3>
 
-        <!-- 🔍 Search Form (backend connected) -->
-        <form method="get" action="/shipments/view" class="search-bar mb-3">
-            <div class="input-group">
-                <span class="input-group-text">🔍</span>
-                <input type="text"
-                       name="search"
-                       th:value="${search}"
-                       class="form-control"
-                       placeholder="Search shipments (Consignee, Container, Shipper, Port...)">
-                <button type="submit" class="btn btn-outline-primary">Search</button>
+        <!-- 🔍 Live Search -->
+        <div class="row mb-3">
+            <div class="col-md-8">
+                <input type="text" name="search" th:value="${search}" class="form-control"
+                       placeholder="Search shipments (Consignee, Container, Shipper, Port...)"/>
             </div>
-        </form>
+            <div class="col-md-4 text-end">
+                <select id="pageSizeSelect" class="form-select w-auto d-inline-block">
+                    <option th:value="10" th:selected="${size == 10}">10</option>
+                    <option th:value="25" th:selected="${size == 25}">25</option>
+                    <option th:value="50" th:selected="${size == 50}">50</option>
+                    <option th:value="100" th:selected="${size == 100}">100</option>
+                </select>
+                <span class="ms-2 text-muted">records per page</span>
+            </div>
+        </div>
 
-        <!-- Shipment Table -->
-        <div class="table-responsive table-container">
-            <table class="table table-bordered table-striped align-middle">
-                <thead>
+        <!-- 📋 Shipment Table -->
+        <div class="table-responsive">
+            <table class="table table-striped align-middle table-bordered">
+                <thead class="table-dark">
                 <tr>
-                    <th>#</th>
-                    <th>Serial No</th>
-                    <th>Consignee</th>
-                    <th>Notify</th>
-                    <th>Stuffing Date</th>
-                    <th>Shipping Line</th>
-                    <th>Container No</th>
-                    <th>Container Size</th>
+                    <th><a href="#" data-sort="serialNo">Serial No</a></th>
+                    <th><a href="#" data-sort="consigneeName">Consignee</a></th>
+                    <th><a href="#" data-sort="shippingLine">Shipping Line</a></th>
+                    <th><a href="#" data-sort="destinationPort">Destination Port</a></th>
+                    <th><a href="#" data-sort="stuffingDate">Stuffing Date</a></th>
+                    <th>Container</th>
                     <th>Shipper</th>
-                    <th>Invoice No</th>
-                    <th>HBL No</th>
-                    <th>Total Cartons</th>
-                    <th>CBM</th>
-                    <th>Gross Weight</th>
-                    <th>ETD Origin</th>
-                    <th>Feeder Vsl/Voy</th>
-                    <th>ETD Transshipment</th>
-                    <th>Mother Vsl/Voy</th>
-                    <th>ETA Destination</th>
-                    <th>Destination Port</th>
                     <th>Remarks</th>
                 </tr>
                 </thead>
-                <tbody>
-                <tr th:each="ship, iterStat : ${shipments}">
-                    <td th:text="${iterStat.count}">1</td>
-                    <td th:text="${ship.serialNo}">001</td>
-                    <td th:text="${ship.consigneeName}">Consignee</td>
-                    <td th:text="${ship.notify}">Notify</td>
-                    <td th:text="${ship.stuffingDate}">2025-11-01</td>
-                    <td th:text="${ship.shippingLine}">Shipping Line</td>
-                    <td th:text="${ship.containerNumber}">TCLU1234567</td>
-                    <td th:text="${ship.containerSize}">40FT</td>
-                    <td th:text="${ship.shipperName}">Shipper</td>
-                    <td th:text="${ship.shipperInvoiceNumber}">INV001</td>
-                    <td th:text="${ship.hblNumber}">HBL001</td>
-                    <td th:text="${ship.totalCartons}">120</td>
-                    <td th:text="${ship.cbm}">23.5</td>
-                    <td th:text="${ship.grossWeight}">15000</td>
-                    <td th:text="${ship.etdOriginPort}">Tuticorin</td>
-                    <td th:text="${ship.feederVesselVoyage}">Feeder V1</td>
-                    <td th:text="${ship.etdTransshipmentPort}">Colombo</td>
-                    <td th:text="${ship.motherVesselVoyage}">Mother V2</td>
-                    <td th:text="${ship.etaDestinationPort}">New York</td>
-                    <td th:text="${ship.destinationPort}">NY Port</td>
-                    <td th:text="${ship.remarks}">In Transit</td>
-                </tr>
-                <tr th:if="${#lists.isEmpty(shipments)}">
-                    <td colspan="21" class="text-center text-muted py-3">No shipments found for your search.</td>
-                </tr>
-                </tbody>
+                <tbody id="shipmentTableBody" th:replace="fragments/shipment-table :: shipmentTableBody"></tbody>
             </table>
         </div>
+
+        <!-- 🔢 Pagination -->
+        <nav id="paginationContainer">
+            <ul class="pagination justify-content-center mt-3">
+                <li class="page-item disabled"><a class="page-link" href="#">Loading...</a></li>
+            </ul>
+        </nav>
+
+        <div id="pageSummary" class="text-center text-muted small"></div>
     </div>
 </div>
 
-<footer>
-    © 2025 QTEN Logistics | Designed by Udayakumar G.
-</footer>
+<footer class="text-center mt-3 text-muted">© 2025 QTEN Logistics Portal</footer>
+
+<!-- 💡 Dynamic JS for Live Search, Pagination, Sorting + State in URL -->
+<script>
+    const searchInput = document.querySelector('input[name="search"]');
+    const tableBody = document.getElementById('shipmentTableBody');
+    const paginationContainer = document.getElementById('paginationContainer');
+    const pageSummary = document.getElementById('pageSummary');
+    const pageSizeSelect = document.getElementById('pageSizeSelect');
+    let currentPage = 0, sortBy = 'stuffingDate', direction = 'desc', size = 10, totalPages = 1;
+
+    // 🔄 Parse URL parameters on page load
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('page')) currentPage = parseInt(params.get('page'));
+    if (params.get('size')) size = parseInt(params.get('size'));
+    if (params.get('sortBy')) sortBy = params.get('sortBy');
+    if (params.get('direction')) direction = params.get('direction');
+    if (params.get('search')) searchInput.value = params.get('search');
+    pageSizeSelect.value = size;
+
+    function updateURL() {
+        const query = searchInput.value.trim();
+        const newParams = new URLSearchParams({
+            page: currentPage,
+            size: size,
+            sortBy: sortBy,
+            direction: direction,
+            search: query
+        });
+        const newUrl = `${window.location.pathname}?${newParams.toString()}`;
+        history.replaceState(null, '', newUrl);
+    }
+
+    function loadShipments() {
+        const query = searchInput.value.trim();
+        const url = `/shipments/search?search=${encodeURIComponent(query)}&page=${currentPage}&size=${size}&sortBy=${sortBy}&direction=${direction}`;
+
+        updateURL();
+        tableBody.innerHTML = '<tr><td colspan="8" class="search-loader">Loading...</td></tr>';
+
+        fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+            .then(res => res.text())
+            .then(html => {
+                tableBody.innerHTML = html;
+                totalPages = parseInt(document.getElementById('totalPages')?.value || 1);
+                const totalItems = parseInt(document.getElementById('totalItems')?.value || 0);
+                updatePagination();
+                updateSummary(totalItems);
+            })
+            .catch(err => console.error(err));
+    }
+
+    function updatePagination() {
+        let html = '';
+        if (totalPages > 1) {
+            html += `<ul class="pagination justify-content-center mt-3">`;
+            html += `<li class="page-item ${currentPage === 0 ? 'disabled' : ''}">
+                        <a class="page-link" href="#" data-page="${currentPage - 1}">&laquo; Prev</a>
+                     </li>`;
+            for (let i = 0; i < totalPages; i++) {
+                html += `<li class="page-item ${i === currentPage ? 'active' : ''}">
+                            <a class="page-link" href="#" data-page="${i}">${i + 1}</a>
+                         </li>`;
+            }
+            html += `<li class="page-item ${currentPage >= totalPages - 1 ? 'disabled' : ''}">
+                        <a class="page-link" href="#" data-page="${currentPage + 1}">Next &raquo;</a>
+                     </li>`;
+            html += `</ul>`;
+        }
+        paginationContainer.innerHTML = html;
+    }
+
+    function updateSummary(totalItems) {
+        const start = totalItems === 0 ? 0 : currentPage * size + 1;
+        const end = Math.min((currentPage + 1) * size, totalItems);
+        pageSummary.innerText = `Showing ${start}–${end} of ${totalItems} records`;
+    }
+
+    // 🔍 Live search
+    let timeout = null;
+    searchInput.addEventListener('keyup', function () {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => {
+            currentPage = 0;
+            loadShipments();
+        }, 300);
+    });
+
+    // 🔢 Pagination click
+    document.addEventListener('click', function (e) {
+        const link = e.target.closest('a.page-link');
+        if (link && link.dataset.page !== undefined) {
+            e.preventDefault();
+            const page = parseInt(link.dataset.page);
+            if (!isNaN(page) && page >= 0 && page < totalPages) {
+                currentPage = page;
+                loadShipments();
+            }
+        }
+
+        const sortLink = e.target.closest('th a[data-sort]');
+        if (sortLink) {
+            e.preventDefault();
+            const newSort = sortLink.dataset.sort;
+            if (sortBy === newSort) {
+                direction = direction === 'asc' ? 'desc' : 'asc';
+            } else {
+                sortBy = newSort;
+                direction = 'asc';
+            }
+            currentPage = 0;
+            loadShipments();
+        }
+    });
+
+    // 📏 Page size change
+    pageSizeSelect.addEventListener('change', () => {
+        size = parseInt(pageSizeSelect.value);
+        currentPage = 0;
+        loadShipments();
+    });
+
+    // 🚀 Initial load
+    document.addEventListener('DOMContentLoaded', loadShipments);
+</script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>

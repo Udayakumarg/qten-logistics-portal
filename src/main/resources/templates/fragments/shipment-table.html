@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<th:block th:fragment="shipmentTableBody">
+    <input type="hidden" id="totalPages" th:value="${totalPages}">
+    <input type="hidden" id="totalItems" th:value="${totalItems}">
+
+    <tr th:each="ship : ${shipments}">
+        <td th:text="${ship.serialNo}"></td>
+        <td th:text="${ship.consigneeName}"></td>
+        <td th:text="${ship.shippingLine}"></td>
+        <td th:text="${ship.destinationPort}"></td>
+        <td th:text="${ship.stuffingDate}"></td>
+        <td th:text="${ship.containerNumber}"></td>
+        <td th:text="${ship.shipperName}"></td>
+        <td th:text="${ship.remarks}"></td>
+    </tr>
+
+    <tr th:if="${#lists.isEmpty(shipments)}">
+        <td colspan="8" class="text-center text-muted py-3">No shipments found.</td>
+    </tr>
+</th:block>
+</body>
+</html>

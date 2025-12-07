@@ -22,6 +22,7 @@ public class CorsConfig {
                 "http://localhost:3000",
                 "http://localhost:8080",
                 "https://qten-react-frontend.onrender.com",
+                "https://app.qtenlogistics.com",
                 "https://api.qtenlogistics.com",
                 "https://qtenlogistics.com",
                 "https://www.qtenlogistics.com"
